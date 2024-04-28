@@ -1,36 +1,36 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Checkout') {
+        stage ('checkout') {
             steps {
-                // Checkout the code from the repository
-                git 'https://github.com/rajeshs-raju/DevOpsAssignment.git'
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rajeshs-raju/DevOpsAssignment.git']])
             }
         }
-
-        stage('Build') {
+        stage('Check Environment Variables') {
             steps {
-                // Install dependencies (if needed)
-                sh 'pytest'
+                bat 'set'
             }
         }
-
-        stage('Test') {
+         stage ('Build & Compile') {
             steps {
-                // Run tests
-                sh 'pytest'
+                bat 'java --version'
+                bat 'javac src/CalculatorFeature.java'
+                bat 'javac -cp src src/CalculatorFeatureTest.java'
             }
         }
-    }
-
-    post {
-        success {
-            echo 'Build and test successful!'
+        stage ('Test') {
+            steps {
+                bat 'java -cp src CalculatorFeatureTest'
+            }
         }
-        failure {
-            echo 'Build or test failed!'
+        
+         stage ('Post Build') {
+            steps {
+                cleanWs()
+            }
         }
+        
+         
     }
 }
-
